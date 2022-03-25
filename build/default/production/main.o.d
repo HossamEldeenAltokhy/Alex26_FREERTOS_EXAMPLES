@@ -17,7 +17,8 @@ build/default/production/main.o.d build/default/production/main.o: main.c \
  c:\program\ files\microchip\xc8\v2.32\avr\lib\gcc\avr\5.4.0\include\stddef.h \
  FreeRTOS/FreeRTOSConfig.h FreeRTOS/projdefs.h FreeRTOS/portable.h \
  FreeRTOS/deprecated_definitions.h FreeRTOS/portmacro.h \
- FreeRTOS/mpu_wrappers.h FreeRTOS/task.h FreeRTOS/list.h mUART.h
+ FreeRTOS/mpu_wrappers.h FreeRTOS/task.h FreeRTOS/list.h mUART.h \
+ FreeRTOS/queue.h FreeRTOS/task.h
 
 c:\program\ files\microchip\xc8\v2.32\avr\avr\include\util\delay.h:
 
@@ -70,3 +71,7 @@ FreeRTOS/task.h:
 FreeRTOS/list.h:
 
 mUART.h:
+
+FreeRTOS/queue.h:
+
+FreeRTOS/task.h:

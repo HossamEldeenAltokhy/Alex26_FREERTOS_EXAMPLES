@@ -12,46 +12,38 @@
 #include "FreeRTOS/task.h"
 
 #include "mUART.h"
-
-char str1[] = "Task1 is running\r";
-char str2[] = "Task2 is running\r";
-char str3[] = "Task3 is running\r";
-char str4[] = "Task4 is running\r";
-
-
-TaskHandle_t Task1_Handler;
-TaskHandle_t Task2_Handler;
-TaskHandle_t Task3_Handler;
-TaskHandle_t Task4_Handler;
+#include "FreeRTOS/queue.h"
 
 
 
 
 
-void Task1(void * pv) {
+
+QueueHandle_t Q_Handler;
 
 
+
+void SenderTask(void * pv) {
+
+
+    int pData  = (int ) pv;
     while (1) {
 
-        UART_send_str((char *) pv);
+        xQueueSendToFront(Q_Handler, &pData, 10);
+        
         vTaskDelay(5);
     }
 }
 
-void Task2(void * pv) {
+void ReceiverTask(void * pv) {
 
-    int i = 0;
+    int pData;
     while (1) {
-        i++;
-        UART_send_str((char *) pv);
-        vTaskDelay(2);
-        if (i == 5) {
-            vTaskDelete(Task1_Handler);
-        }
-        if (i == 10) {
-            xTaskCreate(Task1, "Task1", 100, (void *) str1, 1, &Task1_Handler);
-        }
-
+    
+        xQueueReceive(Q_Handler, &pData , 10);
+        
+        UART_send_num(pData);
+        UART_send('\r');
 
     }
 
@@ -60,17 +52,16 @@ void Task2(void * pv) {
 
 int main(void) {
     /* Replace with your application code */
-    DDRA = 0xFF;
-    DDRC = 0xFF;
 
 
+
+    Q_Handler = xQueueCreate(1, sizeof(int));
     init_UART(9600);
-    xTaskCreate(Task1, "Task1", 100, (void *) str1, 1, &Task1_Handler);
-    xTaskCreate(Task1, "Task2", 100, (void *) str2, 1, &Task2_Handler);
-    xTaskCreate(Task1, "Task3", 100, (void *) str3, 1, &Task3_Handler);
-    xTaskCreate(Task2, "Task4", 100, (void *) str4, 1, &Task4_Handler);
+    xTaskCreate(SenderTask, "Task1", 100, (void *) 50, 1, NULL);
+    xTaskCreate(SenderTask, "Task2", 100, (void *) 200, 1, NULL);
+    xTaskCreate(ReceiverTask, "Task3", 100, NULL, 2, NULL);
+   
 
-    _delay_ms(200);
     vTaskStartScheduler();
     // There is an error happened
 
